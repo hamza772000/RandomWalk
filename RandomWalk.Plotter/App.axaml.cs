@@ -16,7 +16,7 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var args = desktop.Args ?? [];
-            string source = args.Length >= 1 && args[0].Contains(':') ? args[0] : $"localhost:{RandomWalk.Common.Ports.GeneratorPub}";
+            var source = args.Length >= 1 && args[0].Contains(':') ? args[0] : $"localhost:{RandomWalk.Common.Ports.GeneratorPub}";
             desktop.MainWindow = new MainWindow(source);
         }
 

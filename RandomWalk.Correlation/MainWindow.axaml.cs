@@ -72,9 +72,9 @@ public partial class MainWindow : Window
         ];
 
         // Pre-populate heatmap grid so we update in place rather than clear+rebuild
-        int n = sources.Count;
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+        var n = sources.Count;
+        for (var i = 0; i < n; i++)
+            for (var j = 0; j < n; j++)
                 _heatData.Add(new WeightedPoint(j, n - 1 - i, i == j ? 1.0 : 0.5));
 
         DataContext = this;
@@ -82,9 +82,9 @@ public partial class MainWindow : Window
 
         Title = $"Correlation — {sources.Count} stream{(sources.Count > 1 ? "s" : "")}";
 
-        for (int i = 0; i < sources.Count; i++)
+        for (var i = 0; i < sources.Count; i++)
         {
-            int idx = i;
+            var idx = i;
             var src = sources[i].Contains("://") ? sources[i] : $"tcp://{sources[i]}";
             Task.Run(() => SubscribeLoop(src, idx));
         }
@@ -121,12 +121,12 @@ public partial class MainWindow : Window
 
     private double[][] ComputeMatrix()
     {
-        int n = _labels.Count;
+        var n = _labels.Count;
         var mat = new double[n][];
-        for (int i = 0; i < n; i++)
+        for (var i = 0; i < n; i++)
         {
             mat[i] = new double[n];
-            for (int j = 0; j < n; j++)
+            for (var j = 0; j < n; j++)
                 mat[i][j] = i == j ? 1.0 : Correlation(_windows[i], _windows[j]);
         }
         return mat;
@@ -134,9 +134,9 @@ public partial class MainWindow : Window
 
     private void UpdateHeatmap(double[][] matrix)
     {
-        int n = matrix.Length;
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+        var n = matrix.Length;
+        for (var i = 0; i < n; i++)
+            for (var j = 0; j < n; j++)
             {
                 var raw = matrix[j][i];
                 var normalized = double.IsNaN(raw) ? 0.5 : (raw + 1.0) / 2.0;
@@ -153,7 +153,7 @@ public partial class MainWindow : Window
         var ys = y.TakeLast(len).ToArray();
         double mx = xs.Average(), my = ys.Average();
         double num = 0, dx = 0, dy = 0;
-        for (int i = 0; i < len; i++)
+        for (var i = 0; i < len; i++)
         {
             double xi = xs[i] - mx, yi = ys[i] - my;
             num += xi * yi; dx += xi * xi; dy += yi * yi;

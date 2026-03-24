@@ -36,7 +36,7 @@ void Store(long tsMs, double value)
 
 // --- Initial value: random between 20.00 and 80.00 ---
 var rng = new Random();
-double current = Math.Round(20.0 + rng.NextDouble() * 60.0, 2);
+var current = Math.Round(20.0 + rng.NextDouble() * 60.0, 2);
 Console.WriteLine($"Starting value : {current:F2}");
 Console.WriteLine($"Up probability : {upProbability:P0}");
 Console.WriteLine($"PUB  tcp://*:{Ports.GeneratorPub}");

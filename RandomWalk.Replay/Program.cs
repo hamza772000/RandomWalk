@@ -19,7 +19,7 @@ var genHost = args[0];
 var fromMinsAgo = double.Parse(args[1]);
 var toMinsAgo = double.Parse(args[2]);
 
-int pubPort = args.Length >= 4 && int.TryParse(args[3], out int pp) ? pp : 0;
+var pubPort = args.Length >= 4 && int.TryParse(args[3], out int pp) ? pp : 0;
 if (pubPort == 0)
 {
     // Find a free port in range 6000–6999
@@ -29,9 +29,9 @@ if (pubPort == 0)
     tmp.Stop();
 }
 
-long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-long fromMs = now - (long)(fromMinsAgo * 60 * 1000);
-long toMs   = now - (long)(toMinsAgo   * 60 * 1000);
+var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+var fromMs = now - (long)(fromMinsAgo * 60 * 1000);
+var toMs   = now - (long)(toMinsAgo   * 60 * 1000);
 
 Console.WriteLine($"Querying history from generator at tcp://{genHost}:{Ports.GeneratorHistory}");
 Console.WriteLine($"Window: {fromMinsAgo} mins ago → {toMinsAgo} mins ago");
@@ -73,12 +73,12 @@ Console.WriteLine("Starting replay. Press Ctrl+C to stop.\n");
 
 try
 {
-    for (int i = 0; i < ticks.Count && !cts.IsCancellationRequested; i++)
+    for (var i = 0; i < ticks.Count && !cts.IsCancellationRequested; i++)
     {
         var tick = ticks[i];
 
         // Replay at original 1-second cadence
-        long delayMs = i == 0 ? 0 : ticks[i].TimestampMs - ticks[i - 1].TimestampMs;
+        var delayMs = i == 0 ? 0L : ticks[i].TimestampMs - ticks[i - 1].TimestampMs;
         if (delayMs > 0)
             await Task.Delay((int)Math.Min(delayMs, 5000), cts.Token);
 

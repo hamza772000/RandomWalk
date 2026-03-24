@@ -8,7 +8,7 @@ string ProjectDir(string name) => Path.Combine(baseDir, name);
 
 // --- Process registry ---
 var processes = new Dictionary<int, ManagedProcess>();
-int nextId = 1;
+var nextId = 1;
 
 // --- Helpers ---
 Process Spawn(string project, string arguments, Action<string>? onOutput = null)

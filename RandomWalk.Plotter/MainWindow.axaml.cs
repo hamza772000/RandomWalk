@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     {
         var parts = source.Split(':');
         var host = parts[0];
-        int port = int.TryParse(parts[1], out int p) ? p : Ports.GeneratorPub;
+        var port = int.TryParse(parts[1], out int p) ? p : Ports.GeneratorPub;
 
         Series =
         [

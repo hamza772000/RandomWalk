@@ -20,7 +20,7 @@ public partial class MainWindow : Window
 
         var parts = source.Split(':');
         var host = parts[0];
-        int port = int.TryParse(parts[1], out int p) ? p : Ports.GeneratorPub;
+        var port = int.TryParse(parts[1], out int p) ? p : Ports.GeneratorPub;
 
         Title = $"Display — {source}";
         LabelText.Text = port == Ports.GeneratorPub ? "LIVE FEED" : $"REPLAY :{port}";
@@ -49,7 +49,7 @@ public partial class MainWindow : Window
     private void UpdateUi(TickMessage tick)
     {
         var time = DateTimeOffset.FromUnixTimeMilliseconds(tick.TimestampMs).ToLocalTime();
-        bool? up = _prev is null ? null : tick.Value > _prev ? true : tick.Value < _prev ? false : null;
+        var up = _prev is null ? (bool?)null : tick.Value > _prev ? true : tick.Value < _prev ? false : null;
 
         IBrush color = up is null ? Brushes.White : up.Value ? new SolidColorBrush(Color.Parse("#69ff9d")) : new SolidColorBrush(Color.Parse("#ff6b6b"));
 
