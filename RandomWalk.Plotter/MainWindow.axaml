@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:local="using:RandomWalk.Plotter"
+        x:DataType="local:MainWindow"
+        x:Class="RandomWalk.Plotter.MainWindow"
+        Title="Random Walk — Plotter"
+        Width="900" Height="500"
+        Background="#1a1a2e"
+        CanResize="True">
+
+    <Grid RowDefinitions="Auto,*" Margin="16">
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,8">
+            <TextBlock x:Name="SourceLabel"
+                       FontFamily="Courier New" FontSize="12" Foreground="#888"
+                       VerticalAlignment="Center" />
+            <TextBlock x:Name="CurrentValue"
+                       FontFamily="Courier New" FontSize="28" FontWeight="Bold"
+                       Foreground="White" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <lvc:CartesianChart Grid.Row="1"
+                            x:Name="Chart"
+                            Series="{Binding Series}"
+                            XAxes="{Binding XAxes}"
+                            YAxes="{Binding YAxes}"
+                            Background="#16213e" />
+    </Grid>
+</Window>

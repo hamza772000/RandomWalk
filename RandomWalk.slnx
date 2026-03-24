@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="RandomWalk.Common/RandomWalk.Common.csproj" />
+  <Project Path="RandomWalk.Correlation/RandomWalk.Correlation.csproj" />
+  <Project Path="RandomWalk.Display/RandomWalk.Display.csproj" />
+  <Project Path="RandomWalk.Generator/RandomWalk.Generator.csproj" />
+  <Project Path="RandomWalk.Orchestrator/RandomWalk.Orchestrator.csproj" />
+  <Project Path="RandomWalk.Plotter/RandomWalk.Plotter.csproj" />
+  <Project Path="RandomWalk.Replay/RandomWalk.Replay.csproj" />
+</Solution>

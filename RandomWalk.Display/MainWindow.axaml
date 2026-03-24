@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="RandomWalk.Display.MainWindow"
+        Title="Random Walk — Display"
+        Width="400" Height="300"
+        Background="#1a1a2e"
+        CanResize="True">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+
+        <TextBlock x:Name="LabelText"
+                   Text="LIVE FEED"
+                   FontFamily="Courier New"
+                   FontSize="13"
+                   Foreground="#888888"
+                   HorizontalAlignment="Center"
+                   LetterSpacing="3" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+            <TextBlock x:Name="ArrowText"
+                       Text="─"
+                       FontSize="48"
+                       Foreground="#eeeeee"
+                       VerticalAlignment="Center" />
+            <TextBlock x:Name="ValueText"
+                       Text="--"
+                       FontFamily="Courier New"
+                       FontSize="72"
+                       FontWeight="Bold"
+                       Foreground="#eeeeee"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <TextBlock x:Name="TimeText"
+                   Text="waiting..."
+                   FontFamily="Courier New"
+                   FontSize="13"
+                   Foreground="#555555"
+                   HorizontalAlignment="Center" />
+
+    </StackPanel>
+</Window>

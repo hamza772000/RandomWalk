@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:local="using:RandomWalk.Correlation"
+        x:DataType="local:MainWindow"
+        x:Class="RandomWalk.Correlation.MainWindow"
+        Title="Random Walk — Correlation"
+        Width="600" Height="620"
+        Background="#1a1a2e"
+        CanResize="True">
+
+    <Grid RowDefinitions="Auto,*" Margin="16">
+
+        <TextBlock Grid.Row="0"
+                   Text="Correlation Matrix (60-tick rolling window)"
+                   FontFamily="Courier New" FontSize="12"
+                   Foreground="#888" Margin="0,0,0,8" />
+
+        <lvc:CartesianChart Grid.Row="1"
+                            x:Name="Chart"
+                            Series="{Binding Series}"
+                            XAxes="{Binding XAxes}"
+                            YAxes="{Binding YAxes}"
+                            Background="#16213e" />
+    </Grid>
+</Window>
