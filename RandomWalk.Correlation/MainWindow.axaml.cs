@@ -138,8 +138,8 @@ public partial class MainWindow : Window
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
             {
-                double raw = matrix[j][i];
-                double normalized = double.IsNaN(raw) ? 0.5 : (raw + 1.0) / 2.0;
+                var raw = matrix[j][i];
+                var normalized = double.IsNaN(raw) ? 0.5 : (raw + 1.0) / 2.0;
                 var point = _heatData[i * n + j];
                 point.Weight = normalized;
             }
@@ -147,7 +147,7 @@ public partial class MainWindow : Window
 
     private static double Correlation(List<double> x, List<double> y)
     {
-        int len = Math.Min(x.Count, y.Count);
+        var len = Math.Min(x.Count, y.Count);
         if (len < 2) return double.NaN;
         var xs = x.TakeLast(len).ToArray();
         var ys = y.TakeLast(len).ToArray();
@@ -158,7 +158,7 @@ public partial class MainWindow : Window
             double xi = xs[i] - mx, yi = ys[i] - my;
             num += xi * yi; dx += xi * xi; dy += yi * yi;
         }
-        double denom = Math.Sqrt(dx * dy);
+        var denom = Math.Sqrt(dx * dy);
         return denom == 0 ? 0 : num / denom;
     }
 }

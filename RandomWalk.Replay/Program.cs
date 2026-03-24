@@ -15,9 +15,9 @@ if (args.Length < 3)
     return;
 }
 
-string genHost = args[0];
-double fromMinsAgo = double.Parse(args[1]);
-double toMinsAgo = double.Parse(args[2]);
+var genHost = args[0];
+var fromMinsAgo = double.Parse(args[1]);
+var toMinsAgo = double.Parse(args[2]);
 
 int pubPort = args.Length >= 4 && int.TryParse(args[3], out int pp) ? pp : 0;
 if (pubPort == 0)

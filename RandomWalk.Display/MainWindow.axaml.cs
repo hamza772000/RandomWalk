@@ -19,7 +19,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         var parts = source.Split(':');
-        string host = parts[0];
+        var host = parts[0];
         int port = int.TryParse(parts[1], out int p) ? p : Ports.GeneratorPub;
 
         Title = $"Display — {source}";

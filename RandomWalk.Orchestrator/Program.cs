@@ -45,6 +45,59 @@ void Register(int id, string type, string description, Process proc)
     processes[id] = new ManagedProcess(id, type, description, proc);
 }
 
+// Starts a replay and returns a Task that completes once the port is known
+Task<int> StartReplay(string host, string from, string to)
+{
+    var id = nextId++;
+    var desc = $"{host}  {from}→{to} mins ago";
+    var tcs = new TaskCompletionSource<int>();
+
+    var proc = Spawn("RandomWalk.Replay", $"{host} {from} {to}", output =>
+    {
+        if (!tcs.Task.IsCompleted)
+        {
+            var m = Regex.Match(output, @"tcp://\*:(\d+)");
+            if (m.Success)
+            {
+                var port = int.Parse(m.Groups[1].Value);
+                processes[id] = processes[id] with { Port = port };
+                Console.WriteLine($"  [{id}] Replay ready on port {port}  ({desc})");
+                Console.Write("> ");
+                tcs.SetResult(port);
+            }
+        }
+    });
+
+    Register(id, "replay", desc, proc);
+    Console.WriteLine($"  [{id}] Replay starting... ({desc})");
+    return tcs.Task;
+}
+
+void StartDisplay(string source)
+{
+    var id = nextId++;
+    var proc = Spawn("RandomWalk.Display", source);
+    Register(id, "display", $"source: {source}", proc);
+    Console.WriteLine($"  [{id}] Display window opening  (source: {source})");
+}
+
+void StartPlotter(string source)
+{
+    var id = nextId++;
+    var proc = Spawn("RandomWalk.Plotter", source);
+    Register(id, "plotter", $"source: {source}", proc);
+    Console.WriteLine($"  [{id}] Plotter window opening  (source: {source})");
+}
+
+void StartCorrelation(IEnumerable<string> sources)
+{
+    var id = nextId++;
+    var sourceList = string.Join(" ", sources);
+    var proc = Spawn("RandomWalk.Correlation", sourceList);
+    Register(id, "correlate", $"sources: {sourceList}", proc);
+    Console.WriteLine($"  [{id}] Correlation window opening");
+}
+
 void PrintHelp()
 {
     Console.WriteLine();
@@ -54,6 +107,7 @@ void PrintHelp()
     Console.WriteLine("    display <host:port>                Open a display window");
     Console.WriteLine("    plotter <host:port>                Open a plotter window");
     Console.WriteLine("    correlate <host:port> [...]        Open a correlation heatmap window");
+    Console.WriteLine("    demo [host]                        Run the full demo sequence");
     Console.WriteLine("    list                               Show all running processes");
     Console.WriteLine("    stop <id>                          Stop a process by ID");
     Console.WriteLine("    help                               Show this help");
@@ -73,10 +127,44 @@ void PrintList()
     Console.WriteLine($"  {new string('-', 80)}");
     foreach (var mp in processes.Values)
     {
-        string status = mp.Process.HasExited ? "stopped" : "running";
+        var status = mp.Process.HasExited ? "stopped" : "running";
         Console.WriteLine($"  {mp.Id,-4} {mp.Type,-12} {mp.Description,-50} {status}");
     }
     Console.WriteLine();
+}
+
+async Task RunDemo(string host)
+{
+    Console.WriteLine();
+    Console.WriteLine("  ── Demo starting ──────────────────────────────────────────");
+    Console.WriteLine();
+
+    // Step 1: Replay A — 20 mins ago to 10 mins ago
+    Console.WriteLine("  Step 1: Replay A  (20 mins ago → 10 mins ago)");
+    var portA = await StartReplay(host, "20", "10");
+    StartDisplay($"localhost:{portA}");
+    StartPlotter($"localhost:{portA}");
+
+    Console.WriteLine();
+    await Task.Delay(2000);
+
+    // Step 2: Replay B — 15 mins ago to 10 mins ago
+    Console.WriteLine("  Step 2: Replay B  (15 mins ago → 10 mins ago)");
+    var portB = await StartReplay(host, "15", "10");
+    StartDisplay($"localhost:{portB}");
+    StartPlotter($"localhost:{portB}");
+
+    Console.WriteLine();
+    await Task.Delay(2000);
+
+    // Step 3: Correlation across both replays
+    Console.WriteLine("  Step 3: Correlation across both replays");
+    StartCorrelation([$"localhost:{portA}", $"localhost:{portB}"]);
+
+    Console.WriteLine();
+    Console.WriteLine("  ── Demo running ───────────────────────────────────────────");
+    Console.WriteLine();
+    Console.Write("> ");
 }
 
 // --- REPL ---
@@ -119,76 +207,35 @@ while (true)
                 Console.WriteLine("  Usage: replay <host> <fromMinsAgo> <toMinsAgo>");
                 break;
             }
-            var host = parts[1];
-            var from = parts[2];
-            var to   = parts[3];
-            var id   = nextId++;
-            int? capturedPort = null;
-            var desc = $"{host}  {from}→{to} mins ago";
-
-            var proc = Spawn("RandomWalk.Replay", $"{host} {from} {to}", output =>
-            {
-                if (capturedPort is null)
-                {
-                    var m = Regex.Match(output, @"tcp://\*:(\d+)");
-                    if (m.Success)
-                    {
-                        capturedPort = int.Parse(m.Groups[1].Value);
-                        processes[id] = processes[id] with { Port = capturedPort };
-                        Console.WriteLine($"  [{id}] Replay ready on port {capturedPort}  ({desc})");
-                        Console.Write("> ");
-                    }
-                }
-            });
-
-            Register(id, "replay", desc, proc);
-            Console.WriteLine($"  [{id}] Replay starting... (waiting for port)");
+            _ = StartReplay(parts[1], parts[2], parts[3]);
             break;
         }
 
         case "display":
         {
-            if (parts.Length < 2)
-            {
-                Console.WriteLine("  Usage: display <host:port>");
-                break;
-            }
-            var source = parts[1];
-            var id     = nextId++;
-            var proc   = Spawn("RandomWalk.Display", source);
-            Register(id, "display", $"source: {source}", proc);
-            Console.WriteLine($"  [{id}] Display window opening  (source: {source})");
+            if (parts.Length < 2) { Console.WriteLine("  Usage: display <host:port>"); break; }
+            StartDisplay(parts[1]);
             break;
         }
 
         case "plotter":
         {
-            if (parts.Length < 2)
-            {
-                Console.WriteLine("  Usage: plotter <host:port>");
-                break;
-            }
-            var source = parts[1];
-            var id     = nextId++;
-            var proc   = Spawn("RandomWalk.Plotter", source);
-            Register(id, "plotter", $"source: {source}", proc);
-            Console.WriteLine($"  [{id}] Plotter window opening  (source: {source})");
+            if (parts.Length < 2) { Console.WriteLine("  Usage: plotter <host:port>"); break; }
+            StartPlotter(parts[1]);
             break;
         }
 
         case "correlate":
         {
-            if (parts.Length < 2)
-            {
-                Console.WriteLine("  Usage: correlate <host:port> [host:port ...]");
-                break;
-            }
-            var sources  = string.Join(" ", parts.Skip(1));
-            var id       = nextId++;
-            var proc     = Spawn("RandomWalk.Correlation", sources);
-            var desc     = $"sources: {string.Join(", ", parts.Skip(1))}";
-            Register(id, "correlate", desc, proc);
-            Console.WriteLine($"  [{id}] Correlation window opening");
+            if (parts.Length < 2) { Console.WriteLine("  Usage: correlate <host:port> [host:port ...]"); break; }
+            StartCorrelation(parts.Skip(1));
+            break;
+        }
+
+        case "demo":
+        {
+            var host = parts.Length >= 2 ? parts[1] : "localhost";
+            _ = RunDemo(host);
             break;
         }
 
